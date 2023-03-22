@@ -46,6 +46,7 @@ import com.velocitypowered.proxy.protocol.netty.MinecraftCompressorAndLengthEnco
 import com.velocitypowered.proxy.protocol.netty.MinecraftDecoder;
 import com.velocitypowered.proxy.protocol.netty.MinecraftEncoder;
 import com.velocitypowered.proxy.protocol.netty.MinecraftVarintLengthEncoder;
+import com.velocitypowered.proxy.protocol.packet.scoreboard.Team;
 import com.velocitypowered.proxy.util.except.QuietDecoderException;
 import io.netty.buffer.ByteBuf;
 import io.netty.channel.Channel;
@@ -218,6 +219,19 @@ public class MinecraftConnection extends ChannelInboundHandlerAdapter {
       channel.writeAndFlush(msg, channel.voidPromise());
     } else {
       ReferenceCountUtil.release(msg);
+    }
+  }
+
+  /**
+   * Writes raw data to the stream, skipping the minecraft encoding process.
+   *
+   * @param buf the data to write
+   */
+  public void writeRaw(ByteBuf buf) {
+    if (channel.isActive()) {
+      channel.writeAndFlush(buf, channel.voidPromise());
+    } else {
+      ReferenceCountUtil.release(buf);
     }
   }
 

@@ -87,6 +87,12 @@ public class KeyedChatHandler implements com.velocitypowered.proxy.protocol.pack
             .message(chatResult.getMessage().orElse(packet.getMessage())).setTimestamp(packet.getExpiry()).toServer();
       });
     }
+
+    //Don't do anything if the chat isn't allowed
+    if (!toSend.getResult().isAllowed()) {
+      return;
+    }
+
     chatQueue.queuePacket(
         chatFuture.exceptionally((ex) -> {
           logger.error("Exception while handling player chat for {}", player, ex);
@@ -101,13 +107,12 @@ public class KeyedChatHandler implements com.velocitypowered.proxy.protocol.pack
     assert playerKey != null;
     return pme -> {
       PlayerChatEvent.ChatResult chatResult = pme.getResult();
-      if (!chatResult.isAllowed() && playerKey.getKeyRevision().compareTo(IdentifiedKey.Revision.LINKED_V2) >= 0) {
-        invalidCancel(logger, player);
+      if (!chatResult.isAllowed()) {
         return null;
       }
 
       if (chatResult.getMessage().map(str -> !str.equals(packet.getMessage())).orElse(false)) {
-        if (playerKey.getKeyRevision().compareTo(IdentifiedKey.Revision.LINKED_V2) >= 0) {
+        if (playerKey.getKeyRevision().compareTo(IdentifiedKey.Revision.LINKED_V2) >= 0 && false) {
           // Bad, very bad.
           invalidChange(logger, player);
         } else {

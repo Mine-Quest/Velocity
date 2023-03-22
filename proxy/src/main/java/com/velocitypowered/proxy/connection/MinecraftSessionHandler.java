@@ -55,6 +55,10 @@ import com.velocitypowered.proxy.protocol.packet.chat.keyed.KeyedPlayerCommand;
 import com.velocitypowered.proxy.protocol.packet.chat.legacy.LegacyChat;
 import com.velocitypowered.proxy.protocol.packet.chat.session.SessionPlayerChat;
 import com.velocitypowered.proxy.protocol.packet.chat.session.SessionPlayerCommand;
+import com.velocitypowered.proxy.protocol.packet.scoreboard.ScoreboardDisplay;
+import com.velocitypowered.proxy.protocol.packet.scoreboard.ScoreboardObjective;
+import com.velocitypowered.proxy.protocol.packet.scoreboard.ScoreboardScore;
+import com.velocitypowered.proxy.protocol.packet.scoreboard.Team;
 import com.velocitypowered.proxy.protocol.packet.title.LegacyTitlePacket;
 import com.velocitypowered.proxy.protocol.packet.title.TitleActionbarPacket;
 import com.velocitypowered.proxy.protocol.packet.title.TitleClearPacket;
@@ -274,6 +278,22 @@ public interface MinecraftSessionHandler {
   }
 
   default boolean handle(UpsertPlayerInfo packet) {
+    return false;
+  }
+
+  default boolean handle(ScoreboardObjective packet) {
+    return false;
+  }
+
+  default boolean handle(Team packet) {
+    return false;
+  }
+
+  default boolean handle(ScoreboardDisplay packet) {
+    return false;
+  }
+
+  default boolean handle(ScoreboardScore packet) {
     return false;
   }
 }

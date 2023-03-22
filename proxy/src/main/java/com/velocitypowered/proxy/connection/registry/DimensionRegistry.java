@@ -1,28 +1,13 @@
-/*
- * Copyright (C) 2018 Velocity Contributors
- *
- * This program is free software: you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published by
- * the Free Software Foundation, either version 3 of the License, or
- * (at your option) any later version.
- *
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU General Public License for more details.
- *
- * You should have received a copy of the GNU General Public License
- * along with this program.  If not, see <https://www.gnu.org/licenses/>.
- */
-
 package com.velocitypowered.proxy.connection.registry;
 
 import com.google.common.base.Preconditions;
 import com.google.common.collect.ImmutableSet;
 import com.google.common.collect.Maps;
+
 import com.velocitypowered.api.network.ProtocolVersion;
 import java.util.Map;
 import java.util.Set;
+
 import net.kyori.adventure.nbt.BinaryTag;
 import net.kyori.adventure.nbt.BinaryTagTypes;
 import net.kyori.adventure.nbt.CompoundBinaryTag;
@@ -46,17 +31,17 @@ public final class DimensionRegistry {
    * @param levelNames a populated {@link ImmutableSet} of the level (world) names the server offers
    */
   public DimensionRegistry(ImmutableSet<DimensionData> registeredDimensions,
-      ImmutableSet<String> levelNames) {
+                            ImmutableSet<String> levelNames) {
     Preconditions.checkNotNull(registeredDimensions,
-        "registeredDimensions cannot be null");
+            "registeredDimensions cannot be null");
     Preconditions.checkNotNull(levelNames,
-        "levelNames cannot be null");
+            "levelNames cannot be null");
     Preconditions.checkArgument(registeredDimensions.size() > 0,
-        "registeredDimensions needs to be populated");
+            "registeredDimensions needs to be populated");
     Preconditions.checkArgument(levelNames.size() > 0,
-        "levelNames needs to populated");
+            "levelNames needs to populated");
     this.registeredDimensions = Maps.uniqueIndex(
-        registeredDimensions, DimensionData::getRegistryIdentifier);
+            registeredDimensions, DimensionData::getRegistryIdentifier);
     this.levelNames = levelNames;
   }
 
@@ -87,7 +72,7 @@ public final class DimensionRegistry {
       return false;
     }
     return registeredDimensions.containsKey(toValidate.getRegistryIdentifier())
-        && levelNames.contains(toValidate.getLevelName());
+            && levelNames.contains(toValidate.getLevelName());
   }
 
   /**

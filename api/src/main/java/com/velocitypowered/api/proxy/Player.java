@@ -233,6 +233,13 @@ public interface Player extends CommandSource, Identified, InboundConnection,
   ResourcePackInfo getPendingResourcePack();
 
   /**
+   * Sends a raw packet to the player.
+   *
+   * @param packet the packet to send
+   */
+  void sendRawPacket(Object packet);
+
+  /**
    * <strong>Note that this method does not send a plugin message to the server the player
    * is connected to.</strong> You should only use this method if you are trying to communicate
    * with a mod that is installed on the player's client. To send a plugin message to the server

@@ -1,22 +1,11 @@
 plugins {
-    id 'java-library'
+    id 'java'
     id 'maven-publish'
     id 'checkstyle'
+    id "net.ltgt.errorprone" version "0.8"
 }
 
-apply plugin: 'org.cadixdev.licenser'
-apply from: '../gradle/checkstyle.gradle'
-apply from: '../gradle/publish.gradle'
 apply plugin: 'com.github.johnrengelman.shadow'
-
-java {
-    sourceCompatibility = JavaVersion.VERSION_1_8
-    targetCompatibility = JavaVersion.VERSION_1_8
-}
-
-license {
-    header = project.file('HEADER.txt')
-}
 
 sourceSets {
     ap {
@@ -25,30 +14,19 @@ sourceSets {
 }
 
 dependencies {
-    api 'com.google.code.gson:gson:2.9.0'
-    api "com.google.guava:guava:${guavaVersion}"
+    compile 'com.google.code.gson:gson:2.8.5'
+    compile "com.google.guava:guava:${guavaVersion}"
+    compile "net.kyori:text-api:${textVersion}"
+    compile "net.kyori:text-serializer-gson:${textVersion}"
+    compile "net.kyori:text-serializer-legacy:${textVersion}"
+    compile "net.kyori:text-serializer-plain:${textVersion}"
+    compile 'com.moandjiezana.toml:toml4j:0.7.2'
+    compile "org.slf4j:slf4j-api:${slf4jVersion}"
+    compile 'com.google.inject:guice:4.2.3'
+    compile "org.checkerframework:checker-qual:${checkerFrameworkVersion}"
 
-    // DEPRECATED: Will be removed in Velocity Polymer
-    api 'com.moandjiezana.toml:toml4j:0.7.2'
-
-    api(platform("net.kyori:adventure-bom:${adventureVersion}"))
-    api("net.kyori:adventure-api")
-    api("net.kyori:adventure-text-serializer-gson")
-    api("net.kyori:adventure-text-serializer-legacy")
-    api("net.kyori:adventure-text-serializer-plain")
-    api("net.kyori:adventure-text-minimessage")
-
-    api "org.slf4j:slf4j-api:${slf4jVersion}"
-    api 'com.google.inject:guice:5.0.1'
-    api "org.checkerframework:checker-qual:${checkerFrameworkVersion}"
-    api 'com.velocitypowered:velocity-brigadier:1.0.0-SNAPSHOT'
-
-    api "org.spongepowered:configurate-hocon:${configurateVersion}"
-    api "org.spongepowered:configurate-yaml:${configurateVersion}"
-    api "org.spongepowered:configurate-gson:${configurateVersion}"
-
-    testImplementation "org.junit.jupiter:junit-jupiter-api:${junitVersion}"
-    testImplementation "org.junit.jupiter:junit-jupiter-engine:${junitVersion}"
+    testCompile "org.junit.jupiter:junit-jupiter-api:${junitVersion}"
+    testCompile "org.junit.jupiter:junit-jupiter-engine:${junitVersion}"
 }
 
 task javadocJar(type: Jar) {
@@ -64,9 +42,6 @@ task sourcesJar(type: Jar) {
 
 jar {
     from sourceSets.ap.output
-    manifest {
-        attributes 'Automatic-Module-Name': 'com.velocitypowered.api'
-    }
 }
 
 shadowJar {
@@ -84,27 +59,15 @@ javadoc {
     options.charSet = 'UTF-8'
     options.source = '8'
     options.links(
-            'https://www.slf4j.org/apidocs/',
-            'https://guava.dev/releases/25.1-jre/api/docs/',
-            'https://google.github.io/guice/api-docs/5.0.1/javadoc/',
-            'https://docs.oracle.com/en/java/javase/11/docs/api//',
-            "https://jd.adventure.kyori.net/api/${adventureVersion}/"
+            'http://www.slf4j.org/apidocs/',
+            'https://google.github.io/guava/releases/25.1-jre/api/docs/',
+            'https://google.github.io/guice/api-docs/4.2/javadoc/',
+            'https://jd.kyori.net/text-api/3.0.0/',
+            'https://docs.oracle.com/javase/8/docs/api/'
     )
 
     // Disable the crazy super-strict doclint tool in Java 8
     options.addStringOption('Xdoclint:none', '-quiet')
-
-    // Mark sources as Java 8 source compatible
-    options.source = '8'
-
-    // Remove 'undefined' from seach paths when generating javadoc for a non-modular project (JDK-8215291)
-    if (JavaVersion.current() >= JavaVersion.VERSION_1_9 && JavaVersion.current() < JavaVersion.VERSION_12) {
-        options.addBooleanOption('-no-module-directories', true)
-    }
-}
-
-test {
-    useJUnitPlatform()
 }
 
 publishing {
@@ -114,6 +77,21 @@ publishing {
 
             artifact sourcesJar
             artifact javadocJar
+        }
+    }
+
+    repositories {
+        maven {
+            credentials {
+                username System.getenv("NEXUS_USERNAME")
+                password System.getenv("NEXUS_PASSWORD")
+            }
+
+            name = 'velocity-nexus'
+            def base = 'https://nexus.velocitypowered.com/repository/velocity-artifacts'
+            def releasesRepoUrl = "$base-release/"
+            def snapshotsRepoUrl = "$base-snapshots/"
+            url = version.endsWith('SNAPSHOT') ? snapshotsRepoUrl : releasesRepoUrl
         }
     }
 }

@@ -1,10 +1,3 @@
-/*
- * Copyright (C) 2018 Velocity Contributors
- *
- * The Velocity API is licensed under the terms of the MIT License. For more details,
- * reference the LICENSE file in the api top-level directory.
- */
-
 package com.velocitypowered.api.plugin.ap;
 
 import com.google.gson.Gson;
@@ -76,8 +69,8 @@ public class PluginAnnotationProcessor extends AbstractProcessor {
       if (!SerializedPluginDescription.ID_PATTERN.matcher(plugin.id()).matches()) {
         environment.getMessager().printMessage(Diagnostic.Kind.ERROR, "Invalid ID for plugin "
             + qualifiedName
-            + ". IDs must start alphabetically, have lowercase alphanumeric characters, and "
-            + "can contain dashes or underscores.");
+            + ". IDs must start alphabetically,be lowercase, have alphanumeric characters, and can "
+            + "contain dashes or underscores.");
         return false;
       }
 

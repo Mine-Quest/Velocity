@@ -1,23 +1,32 @@
+buildscript {
+    repositories {
+        jcenter()
+    }
+    dependencies {
+        classpath 'com.github.jengelman.gradle.plugins:shadow:5.0.0'
+    }
+}
+
 plugins {
     id 'java'
-    id 'com.github.johnrengelman.shadow' version '7.1.0' apply false
-    id 'org.cadixdev.licenser' version '0.6.1' apply false
 }
 
 allprojects {
     group 'com.velocitypowered'
-    version '3.1.2-SNAPSHOT'
+    version '1.0.11-SNAPSHOT'
+
+    sourceCompatibility = 1.8
+    targetCompatibility = 1.8
 
     ext {
         // dependency versions
-        adventureVersion = '4.12.0'
-        junitVersion = '5.9.0'
-        slf4jVersion = '1.7.30'
-        log4jVersion = '2.19.0'
-        nettyVersion = '4.1.85.Final'
+        textVersion = '3.0.3'
+        junitVersion = '5.3.0-M1'
+        slf4jVersion = '1.7.25'
+        log4jVersion = '2.11.2'
+        nettyVersion = '4.1.49.Final'
         guavaVersion = '25.1-jre'
-        checkerFrameworkVersion = '3.6.1'
-        configurateVersion = '3.7.3'
+        checkerFrameworkVersion = '2.7.0'
 
         getCurrentShortRevision = {
             new ByteArrayOutputStream().withStream { os ->
@@ -31,29 +40,24 @@ allprojects {
         }
     }
 
-    java {
-        sourceCompatibility = JavaVersion.VERSION_11
-        targetCompatibility = JavaVersion.VERSION_11
-    }
-
     repositories {
         mavenLocal()
         mavenCentral()
-
+        
         // for kyoripowered dependencies
         maven {
             url 'https://oss.sonatype.org/content/groups/public/'
         }
-
-        // Velocity repo
+        
+        // Brigadier
         maven {
-            url "https://nexus.velocitypowered.com/repository/maven-public/"
+            url "https://libraries.minecraft.net"
         }
     }
 
     test {
         reports {
-            junitXml.required = true
+            junitXml.enabled = true
         }
     }
 }

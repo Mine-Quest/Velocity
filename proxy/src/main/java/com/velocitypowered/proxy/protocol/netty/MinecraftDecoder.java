@@ -27,6 +27,7 @@ import io.netty.buffer.ByteBuf;
 import io.netty.channel.ChannelHandlerContext;
 import io.netty.channel.ChannelInboundHandlerAdapter;
 import io.netty.handler.codec.CorruptedFrameException;
+import org.apache.logging.log4j.LogManager;
 
 public class MinecraftDecoder extends ChannelInboundHandlerAdapter {
 
@@ -86,6 +87,7 @@ public class MinecraftDecoder extends ChannelInboundHandlerAdapter {
         if (buf.isReadable()) {
           throw handleOverflow(packet, buf.readerIndex(), buf.writerIndex());
         }
+
         ctx.fireChannelRead(packet);
       } finally {
         buf.release();

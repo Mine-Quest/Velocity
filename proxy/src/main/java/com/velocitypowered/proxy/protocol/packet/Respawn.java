@@ -1,20 +1,3 @@
-/*
- * Copyright (C) 2018 Velocity Contributors
- *
- * This program is free software: you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published by
- * the Free Software Foundation, either version 3 of the License, or
- * (at your option) any later version.
- *
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU General Public License for more details.
- *
- * You should have received a copy of the GNU General Public License
- * along with this program.  If not, see <https://www.gnu.org/licenses/>.
- */
-
 package com.velocitypowered.proxy.protocol.packet;
 
 import com.velocitypowered.api.network.ProtocolVersion;
@@ -24,10 +7,7 @@ import com.velocitypowered.proxy.connection.registry.DimensionInfo;
 import com.velocitypowered.proxy.protocol.MinecraftPacket;
 import com.velocitypowered.proxy.protocol.ProtocolUtils;
 import io.netty.buffer.ByteBuf;
-import it.unimi.dsi.fastutil.Pair;
-import net.kyori.adventure.nbt.BinaryTagIO;
 import net.kyori.adventure.nbt.CompoundBinaryTag;
-import org.checkerframework.checker.nullness.qual.Nullable;
 
 public class Respawn implements MinecraftPacket {
 
@@ -36,36 +16,26 @@ public class Respawn implements MinecraftPacket {
   private short difficulty;
   private short gamemode;
   private String levelType = "";
-  private byte dataToKeep; // 1.16+
+  private boolean shouldKeepPlayerData; // 1.16+
   private DimensionInfo dimensionInfo; // 1.16-1.16.1
   private short previousGamemode; // 1.16+
   private DimensionData currentDimensionData; // 1.16.2+
-  private @Nullable Pair<String, Long> lastDeathPosition; // 1.19+
 
   public Respawn() {
   }
 
   public Respawn(int dimension, long partialHashedSeed, short difficulty, short gamemode,
-                 String levelType, byte dataToKeep, DimensionInfo dimensionInfo,
-                 short previousGamemode, DimensionData currentDimensionData,
-                 @Nullable Pair<String, Long> lastDeathPosition) {
+      String levelType, boolean shouldKeepPlayerData, DimensionInfo dimensionInfo,
+      short previousGamemode, DimensionData currentDimensionData) {
     this.dimension = dimension;
     this.partialHashedSeed = partialHashedSeed;
     this.difficulty = difficulty;
     this.gamemode = gamemode;
     this.levelType = levelType;
-    this.dataToKeep = dataToKeep;
+    this.shouldKeepPlayerData = shouldKeepPlayerData;
     this.dimensionInfo = dimensionInfo;
     this.previousGamemode = previousGamemode;
     this.currentDimensionData = currentDimensionData;
-    this.lastDeathPosition = lastDeathPosition;
-  }
-
-  public static Respawn fromJoinGame(JoinGame joinGame) {
-    return new Respawn(joinGame.getDimension(), joinGame.getPartialHashedSeed(),
-        joinGame.getDifficulty(), joinGame.getGamemode(), joinGame.getLevelType(),
-        (byte) 0, joinGame.getDimensionInfo(), joinGame.getPreviousGamemode(),
-        joinGame.getCurrentDimensionData(), joinGame.getLastDeathPosition());
   }
 
   public int getDimension() {
@@ -108,12 +78,12 @@ public class Respawn implements MinecraftPacket {
     this.levelType = levelType;
   }
 
-  public byte getDataToKeep() {
-    return dataToKeep;
+  public boolean getShouldKeepPlayerData() {
+    return shouldKeepPlayerData;
   }
 
-  public void setDataToKeep(byte dataToKeep) {
-    this.dataToKeep = dataToKeep;
+  public void setShouldKeepPlayerData(boolean shouldKeepPlayerData) {
+    this.shouldKeepPlayerData = shouldKeepPlayerData;
   }
 
   public short getPreviousGamemode() {
@@ -124,14 +94,6 @@ public class Respawn implements MinecraftPacket {
     this.previousGamemode = previousGamemode;
   }
 
-  public void setLastDeathPosition(Pair<String, Long> lastDeathPosition) {
-    this.lastDeathPosition = lastDeathPosition;
-  }
-
-  public Pair<String, Long> getLastDeathPosition() {
-    return lastDeathPosition;
-  }
-
   @Override
   public String toString() {
     return "Respawn{"
@@ -140,8 +102,7 @@ public class Respawn implements MinecraftPacket {
         + ", difficulty=" + difficulty
         + ", gamemode=" + gamemode
         + ", levelType='" + levelType + '\''
-        + ", dataToKeep=" + dataToKeep
-        + ", dimensionRegistryName='" + dimensionInfo.toString() + '\''
+        + ", shouldKeepPlayerData=" + shouldKeepPlayerData
         + ", dimensionInfo=" + dimensionInfo
         + ", previousGamemode=" + previousGamemode
         + ", dimensionData=" + currentDimensionData
@@ -153,9 +114,8 @@ public class Respawn implements MinecraftPacket {
     String dimensionIdentifier = null;
     String levelName = null;
     if (version.compareTo(ProtocolVersion.MINECRAFT_1_16) >= 0) {
-      if (version.compareTo(ProtocolVersion.MINECRAFT_1_16_2) >= 0
-          && version.compareTo(ProtocolVersion.MINECRAFT_1_19) < 0) {
-        CompoundBinaryTag dimDataTag = ProtocolUtils.readCompoundTag(buf, BinaryTagIO.reader());
+      if (version.compareTo(ProtocolVersion.MINECRAFT_1_16_2) >= 0) {
+        CompoundBinaryTag dimDataTag = ProtocolUtils.readCompoundTag(buf);
         dimensionIdentifier = ProtocolUtils.readString(buf);
         this.currentDimensionData = DimensionData.decodeBaseCompoundTag(dimDataTag, version)
             .annotateWith(dimensionIdentifier, null);
@@ -178,26 +138,16 @@ public class Respawn implements MinecraftPacket {
       boolean isDebug = buf.readBoolean();
       boolean isFlat = buf.readBoolean();
       this.dimensionInfo = new DimensionInfo(dimensionIdentifier, levelName, isFlat, isDebug);
-      if (version.compareTo(ProtocolVersion.MINECRAFT_1_19_3) >= 0) {
-        this.dataToKeep = buf.readByte();
-      } else if (buf.readBoolean()) {
-        this.dataToKeep = 1;
-      } else {
-        this.dataToKeep = 0;
-      }
+      this.shouldKeepPlayerData = buf.readBoolean();
     } else {
       this.levelType = ProtocolUtils.readString(buf, 16);
-    }
-    if (version.compareTo(ProtocolVersion.MINECRAFT_1_19) >= 0 && buf.readBoolean()) {
-      this.lastDeathPosition = Pair.of(ProtocolUtils.readString(buf), buf.readLong());
     }
   }
 
   @Override
   public void encode(ByteBuf buf, ProtocolUtils.Direction direction, ProtocolVersion version) {
     if (version.compareTo(ProtocolVersion.MINECRAFT_1_16) >= 0) {
-      if (version.compareTo(ProtocolVersion.MINECRAFT_1_16_2) >= 0
-          && version.compareTo(ProtocolVersion.MINECRAFT_1_19) < 0) {
+      if (version.compareTo(ProtocolVersion.MINECRAFT_1_16_2) >= 0) {
         ProtocolUtils.writeCompoundTag(buf, currentDimensionData.serializeDimensionDetails());
         ProtocolUtils.writeString(buf, dimensionInfo.getRegistryIdentifier());
       } else {
@@ -218,24 +168,9 @@ public class Respawn implements MinecraftPacket {
       buf.writeByte(previousGamemode);
       buf.writeBoolean(dimensionInfo.isDebugType());
       buf.writeBoolean(dimensionInfo.isFlat());
-      if (version.compareTo(ProtocolVersion.MINECRAFT_1_19_3) >= 0) {
-        buf.writeByte(dataToKeep);
-      } else {
-        buf.writeBoolean(dataToKeep != 0);
-      }
+      buf.writeBoolean(shouldKeepPlayerData);
     } else {
       ProtocolUtils.writeString(buf, levelType);
-    }
-
-    // optional death location
-    if (version.compareTo(ProtocolVersion.MINECRAFT_1_19) >= 0) {
-      if (lastDeathPosition != null) {
-        buf.writeBoolean(true);
-        ProtocolUtils.writeString(buf, lastDeathPosition.key());
-        buf.writeLong(lastDeathPosition.value());
-      } else {
-        buf.writeBoolean(false);
-      }
     }
   }
 
