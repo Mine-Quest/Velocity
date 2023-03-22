@@ -16,7 +16,6 @@ allprojects {
 subprojects {
     apply<JavaLibraryPlugin>()
 
-    apply<VelocityCheckstylePlugin>()
     apply<VelocityPublishPlugin>()
     apply<VelocitySpotlessPlugin>()
 

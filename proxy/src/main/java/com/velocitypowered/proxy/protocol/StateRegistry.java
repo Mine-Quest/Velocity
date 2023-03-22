@@ -79,6 +79,10 @@ import com.velocitypowered.proxy.protocol.packet.chat.keyed.KeyedPlayerCommand;
 import com.velocitypowered.proxy.protocol.packet.chat.legacy.LegacyChat;
 import com.velocitypowered.proxy.protocol.packet.chat.session.SessionPlayerChat;
 import com.velocitypowered.proxy.protocol.packet.chat.session.SessionPlayerCommand;
+import com.velocitypowered.proxy.protocol.packet.scoreboard.ScoreboardDisplay;
+import com.velocitypowered.proxy.protocol.packet.scoreboard.ScoreboardObjective;
+import com.velocitypowered.proxy.protocol.packet.scoreboard.ScoreboardScore;
+import com.velocitypowered.proxy.protocol.packet.scoreboard.Team;
 import com.velocitypowered.proxy.protocol.packet.title.LegacyTitlePacket;
 import com.velocitypowered.proxy.protocol.packet.title.TitleActionbarPacket;
 import com.velocitypowered.proxy.protocol.packet.title.TitleClearPacket;
@@ -382,6 +386,58 @@ public enum StateRegistry {
           map(0x36, MINECRAFT_1_17, false),
           map(0x34, MINECRAFT_1_19, false),
           map(0x37, MINECRAFT_1_19_1, MINECRAFT_1_19_1, false));
+      clientbound.register(ScoreboardObjective.class, ScoreboardObjective::new,
+              map(0x3B, MINECRAFT_1_8, false),
+              map(0x3F, MINECRAFT_1_9, false),
+              map(0x41, MINECRAFT_1_12, false),
+              map(0x42, MINECRAFT_1_12_1, false),
+              map(0x45, MINECRAFT_1_13, false),
+              map(0x49, MINECRAFT_1_14, false),
+              map(0x4A, MINECRAFT_1_15, false),
+              map(0x53, MINECRAFT_1_17, false),
+              map(0x56, MINECRAFT_1_19_1, false),
+              map(0x54, MINECRAFT_1_19_3, false),
+              map(0x58, MINECRAFT_1_19_4, false)
+      );
+      clientbound.register(ScoreboardScore.class, ScoreboardScore::new,
+              map(0x3C, MINECRAFT_1_8, false),
+              map(0x42, MINECRAFT_1_9, false),
+              map(0x44, MINECRAFT_1_12, false),
+              map(0x45, MINECRAFT_1_12_1, false),
+              map(0x48, MINECRAFT_1_13, false),
+              map(0x4C, MINECRAFT_1_14, false),
+              map(0x4D, MINECRAFT_1_15, false),
+              map(0x56, MINECRAFT_1_17, false),
+              map(0x59, MINECRAFT_1_19_1, false),
+              map(0x57, MINECRAFT_1_19_3, false),
+              map(0x6B, MINECRAFT_1_19_4, false)
+      );
+      clientbound.register(ScoreboardDisplay.class, ScoreboardDisplay::new,
+              map(0x3D, MINECRAFT_1_8, false),
+              map(0x38, MINECRAFT_1_9, false),
+              map(0x3A, MINECRAFT_1_12, false),
+              map(0x3B, MINECRAFT_1_12_1, false),
+              map(0x3E, MINECRAFT_1_13, false),
+              map(0x42, MINECRAFT_1_14, false),
+              map(0x43, MINECRAFT_1_15, false),
+              map(0x4C, MINECRAFT_1_17, false),
+              map(0x4F, MINECRAFT_1_19_1, false),
+              map(0x4D, MINECRAFT_1_19_3, false),
+              map(0x51, MINECRAFT_1_19_4, false)
+      );
+      clientbound.register(Team.class, Team::new,
+              map(0x3E, MINECRAFT_1_8, false),
+              map(0x41, MINECRAFT_1_9, false),
+              map(0x43, MINECRAFT_1_12, false),
+              map(0x44, MINECRAFT_1_12_1, false),
+              map(0x47, MINECRAFT_1_13, false),
+              map(0x4B, MINECRAFT_1_14, false),
+              map(0x4C, MINECRAFT_1_15, false),
+              map(0x55, MINECRAFT_1_17, false),
+              map(0x58, MINECRAFT_1_19_1, false),
+              map(0x56, MINECRAFT_1_19_3, false),
+              map(0x5A, MINECRAFT_1_19_4, false)
+      );
       clientbound.register(RemovePlayerInfo.class, RemovePlayerInfo::new,
           map(0x35, MINECRAFT_1_19_3, false),
           map(0x39, MINECRAFT_1_19_4, false));
