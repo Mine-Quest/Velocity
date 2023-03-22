@@ -57,6 +57,7 @@ import com.velocitypowered.proxy.connection.player.VelocityResourcePackInfo;
 import com.velocitypowered.proxy.connection.util.ConnectionMessages;
 import com.velocitypowered.proxy.connection.util.ConnectionRequestResults.Impl;
 import com.velocitypowered.proxy.connection.util.VelocityInboundConnection;
+import com.velocitypowered.proxy.protocol.MinecraftPacket;
 import com.velocitypowered.proxy.protocol.ProtocolUtils;
 import com.velocitypowered.proxy.protocol.StateRegistry;
 import com.velocitypowered.proxy.protocol.packet.ClientSettings;
@@ -1018,6 +1019,14 @@ public class ConnectedPlayer implements MinecraftConnectionAssociation, Player, 
   @Override
   public @Nullable ResourcePackInfo getPendingResourcePack() {
     return pendingResourcePack;
+  }
+
+  @Override
+  public void sendRawPacket(Object packet) {
+    if(!(packet instanceof MinecraftPacket))
+      return;
+
+    connection.write(packet);
   }
 
   /**
