@@ -148,4 +148,11 @@ public interface ProxyConfig {
    * @return read timeout (in milliseconds)
    */
   int getReadTimeout();
+
+  /**
+   * Get if the proxy server allows cancellation of a signed chat message.
+   *
+   * @return true if this server allows it.
+   */
+  boolean isAllowCancellingSignedChat();
 }

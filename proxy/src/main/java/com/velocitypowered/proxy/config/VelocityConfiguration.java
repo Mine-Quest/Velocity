@@ -92,6 +92,8 @@ public class VelocityConfiguration implements ProxyConfig {
   private @Nullable Favicon favicon;
   @Expose
   private boolean forceKeyAuthentication = true; // Added in 1.19
+  @Expose
+  private boolean allowCancellingSignedChat = true;
 
   private VelocityConfiguration(Servers servers, ForcedHosts forcedHosts, Advanced advanced,
       Query query, Metrics metrics) {
@@ -107,7 +109,8 @@ public class VelocityConfiguration implements ProxyConfig {
       PlayerInfoForwarding playerInfoForwardingMode, byte[] forwardingSecret,
       boolean onlineModeKickExistingPlayers, PingPassthroughMode pingPassthrough,
       boolean enablePlayerAddressLogging, Servers servers, ForcedHosts forcedHosts,
-      Advanced advanced, Query query, Metrics metrics, boolean forceKeyAuthentication) {
+      Advanced advanced, Query query, Metrics metrics, boolean forceKeyAuthentication,
+      boolean allowCancellingSignedChat) {
     this.bind = bind;
     this.motd = motd;
     this.showMaxPlayers = showMaxPlayers;
@@ -352,6 +355,11 @@ public class VelocityConfiguration implements ProxyConfig {
     return advanced.getReadTimeout();
   }
 
+  @Override
+  public boolean isAllowCancellingSignedChat() {
+    return allowCancellingSignedChat;
+  }
+
   public boolean isProxyProtocol() {
     return advanced.isProxyProtocol();
   }
@@ -579,6 +587,7 @@ public class VelocityConfiguration implements ProxyConfig {
         true);
     Boolean kickExisting = config.getOrElse("kick-existing-players", false);
     Boolean enablePlayerAddressLogging = config.getOrElse("enable-player-address-logging", true);
+    Boolean allowCancellingSignedChat = config.getOrElse("allow-cancelling-signed-chat", true);
 
     // Throw an exception if the forwarding-secret file is empty and the proxy is using a
     // forwarding mode that requires it.
@@ -605,7 +614,8 @@ public class VelocityConfiguration implements ProxyConfig {
         new Advanced(advancedConfig),
         new Query(queryConfig),
         new Metrics(metricsConfig),
-        forceKeyAuthentication
+        forceKeyAuthentication,
+        allowCancellingSignedChat
     );
   }
 
