@@ -410,7 +410,7 @@ public enum StateRegistry {
               map(0x56, MINECRAFT_1_17, false),
               map(0x59, MINECRAFT_1_19_1, false),
               map(0x57, MINECRAFT_1_19_3, false),
-              map(0x6B, MINECRAFT_1_19_4, false)
+              map(0x5B, MINECRAFT_1_19_4, false)
       );
       clientbound.register(ScoreboardDisplay.class, ScoreboardDisplay::new,
               map(0x3D, MINECRAFT_1_8, false),
